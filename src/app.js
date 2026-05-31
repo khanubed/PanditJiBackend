@@ -16,23 +16,36 @@ import { isAdmin } from "./middleware/authMiddleware.js";
 import queryRouter from "./routes/queryRouter.js";
 
 const app = express();
-app.use(cors({
-    origin: ['http://localhost:5173' ,'https://ajay-sir.vercel.app/'],
-    credentials: true
-}));
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  process.env.PRODUCTION_FRONTEND_URL,
+];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  }),
+);
 app.use(express.json());
 app.use(cookieParser());
 // Database Connection
 connectDB();
 
+const upload = multer({ storage: storage });
 
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "API is running",
+  });
+});
 
-const upload = multer({ storage : storage });
 // Routes
 // Public route for main website to fetch data
 app.get("/api/content/:sectionName", getSection);
 
-app.use("/api/auth", authRouter)
+app.use("/api/auth", authRouter);
 app.use("/api/query", queryRouter);
 
 // Protected route for Admin Panel (You'll add auth middleware here later)
@@ -40,6 +53,6 @@ app.put("/api/content/:sectionName", isAdmin, saveSection);
 
 // THE IMAGE UPLOAD ROUTE
 // 'image' is the field name we will use in FormData on the frontend
-app.post('/api/upload',isAdmin, upload.single('image'), uploadImage);
+app.post("/api/upload", isAdmin, upload.single("image"), uploadImage);
 
 export default app;
