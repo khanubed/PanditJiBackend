@@ -21,6 +21,8 @@ const allowedOrigins = [
   process.env.PRODUCTION_FRONTEND_URL,
 ];
 
+await connectDB();
+
 app.use(
   cors({
     origin: allowedOrigins,
@@ -30,7 +32,7 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 // Database Connection
-connectDB();
+
 
 const upload = multer({ storage: storage });
 

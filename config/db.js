@@ -1,8 +1,17 @@
 import mongoose from "mongoose";
 
-export const connectDB = async (params) => {
-  mongoose
-    .connect(process.env.MONGO_URI)
-    .then(() => console.log("Connected to Vedic Database"))
-    .catch((err) => console.log(err));
+export const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.MONGO_URI);
+
+    console.log(
+      "Connected to Vedic Database:",
+      conn.connection.host
+    );
+
+    return conn;
+  } catch (error) {
+    console.error("MongoDB Connection Error:", error);
+    throw error;
+  }
 };
